@@ -757,15 +757,6 @@
     <button onclick="window.print()">Imprimer / Export PDF</button>
     <button onclick="window.close()">Fermer</button>
   </div>
-<script>
-  // PWA: enregistrement du Service Worker (nécessite HTTPS ou localhost)
-  if ("serviceWorker" in navigator) {
-    window.addEventListener("load", () => {
-      navigator.serviceWorker.register("./service-worker.js").catch(console.error);
-    });
-  }
-</script>
-
 </body>
 </html>`;
     const w = window.open("", "_blank");
@@ -802,5 +793,14 @@
     setStatus("Prêt", "");
   })();
 </script>
+<script>
+  // PWA: enregistrement du Service Worker (nécessite HTTPS ou localhost)
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("./service-worker.js").catch(console.error);
+    });
+  }
+</script>
+
 </body>
 </html>
