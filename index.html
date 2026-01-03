@@ -1,0 +1,806 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>HONORAIRE – V5</title>
+  <style>
+    :root {
+      --bg: #0c1024;
+      --card: linear-gradient(160deg, rgba(24,30,54,0.96), rgba(19,26,44,0.92));
+      --muted: #b8c4e3;
+      --text: #f8fbff;
+      --line: rgba(255,255,255,0.12);
+      --accent: #7dd3fc;
+      --accent-2: #f8a7ff;
+      --accent-3: #9ef0c0;
+      --danger: #ff8f8f;
+      --shadow: 0 18px 70px rgba(7,8,19,0.45);
+      --radius: 14px;
+      --pad: 16px;
+      --font: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: var(--font);
+      color: var(--text);
+      background: radial-gradient(900px 520px at 18% -6%, rgba(125,211,252,.3), transparent 52%),
+                  radial-gradient(1000px 520px at 86% -10%, rgba(248,167,255,.25), transparent 55%),
+                  radial-gradient(1200px 680px at 40% 120%, rgba(126,217,177,.16), transparent 65%),
+                  var(--bg);
+      min-height: 100vh;
+    }
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(12px);
+      background: rgba(12,16,36,0.82);
+      border-bottom: 1px solid var(--line);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+    }
+    .wrap { max-width: 1200px; margin: 0 auto; padding: 18px 16px; }
+    .title-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+    h1 { margin: 0; font-size: 22px; letter-spacing: .3px; }
+    .subtitle { color: var(--muted); font-size: 13px; margin-top: 4px; }
+    .badge { display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line); background: rgba(255,255,255,0.04); font-size: 12px; color: var(--muted); }
+    .badge.ok { color: #b8ffec; border-color: rgba(110,231,193,.6); }
+    .badge.warn { color: #ffe8b5; border-color: rgba(255,226,159,.6); }
+    .badge.danger { color: #ffc2c2; border-color: rgba(255,143,143,.7); }
+
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    button {
+      cursor: pointer;
+      border: 1px solid rgba(255,255,255,0.16);
+      background: rgba(255,255,255,0.05);
+      color: var(--text);
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-weight: 700;
+      letter-spacing: .2px;
+      transition: transform .08s ease, filter .08s ease;
+    }
+    button.primary { border-color: rgba(125,211,252,.7); background: rgba(125,211,252,.18); box-shadow: 0 10px 30px rgba(125,211,252,.16); }
+    button.good { border-color: rgba(126,217,177,.6); background: rgba(126,217,177,.14); }
+    button.danger { border-color: rgba(255,143,143,.65); background: rgba(255,143,143,.14); }
+    button:hover { filter: brightness(1.05); transform: translateY(-1px); }
+
+    main { padding: 22px 16px 40px; }
+    .grid { display: grid; grid-template-columns: 1.05fr .95fr; gap: 16px; }
+    @media (max-width: 1000px) { .grid { grid-template-columns: 1fr; } }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: var(--pad);
+    }
+    .card h2 { margin: 0 0 10px; font-size: 16px; letter-spacing: .2px; display: flex; justify-content: space-between; align-items: center; }
+    .hint { color: var(--muted); font-size: 12px; line-height: 1.5; }
+    .section { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); }
+    .row { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
+    label { display: block; font-size: 12px; color: var(--muted); margin: 8px 0 6px; }
+    input, select, textarea {
+      width: 100%;
+      background: rgba(13,17,33,.75);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 12px;
+      outline: none;
+      font-size: 14px;
+    }
+    input:focus, select:focus, textarea:focus { border-color: rgba(125,211,252,.8); box-shadow: 0 0 0 3px rgba(125,211,252,.16); }
+    textarea { resize: vertical; min-height: 80px; }
+    .checkboxes { display: grid; grid-template-columns: repeat(auto-fit,minmax(240px,1fr)); gap: 8px; }
+    .check {
+      display: flex; gap: 10px; align-items: flex-start;
+      border: 1px dashed rgba(255,255,255,0.18);
+      padding: 10px;
+      border-radius: 12px;
+      background: rgba(255,255,255,.03);
+    }
+    .check input { width: auto; margin-top: 4px; }
+    .check .meta { font-size: 12px; color: var(--muted); line-height: 1.4; }
+    .chips { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+    .chip { border-radius: 999px; border: 1px solid var(--line); padding: 8px 10px; color: var(--muted); font-size: 12px; background: rgba(255,255,255,.03); }
+
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(230px,1fr)); gap: 12px; margin-top: 12px; }
+    .kpi { border: 1px solid rgba(255,255,255,0.16); background: rgba(255,255,255,.04); border-radius: 12px; padding: 12px; position: relative; overflow: hidden; }
+    .kpi::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(420px 260px at 0% 0%, rgba(125,211,252,.1), transparent 50%),
+                  radial-gradient(420px 260px at 100% 100%, rgba(248,167,255,.08), transparent 55%);
+      opacity: 0.9;
+      pointer-events: none;
+    }
+    .kpi .t { color: var(--muted); font-size: 12px; }
+    .kpi .v { font-size: 20px; font-weight: 800; margin-top: 6px; position: relative; z-index: 1; }
+    .kpi .note { color: var(--muted); font-size: 12px; margin-top: 4px; position: relative; z-index: 1; }
+    .kpi.accent { border-color: rgba(126,240,192,.7); background: linear-gradient(140deg, rgba(126,240,192,.18), rgba(125,211,252,.08)); box-shadow: 0 10px 40px rgba(126,240,192,.18); }
+    .kpi.danger { border-color: rgba(255,143,143,.7); background: linear-gradient(140deg, rgba(255,143,143,.18), rgba(255,255,255,.02)); box-shadow: 0 10px 40px rgba(255,143,143,.18); }
+    .kpi.purple { border-color: rgba(248,167,255,.65); background: linear-gradient(140deg, rgba(248,167,255,.18), rgba(125,211,252,.05)); }
+
+    .summary-bar {
+      display: grid;
+      grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
+      gap: 10px;
+      margin: 14px 0 6px;
+    }
+    .summary-chip {
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 12px;
+      padding: 10px 12px;
+      background: linear-gradient(120deg, rgba(125,211,252,.08), rgba(248,167,255,.06));
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    }
+    .summary-chip .label { color: var(--muted); font-size: 12px; }
+    .summary-chip .value { font-size: 18px; font-weight: 800; margin-top: 4px; }
+    .summary-chip .sub { color: var(--muted); font-size: 12px; margin-top: 2px; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 8px; }
+    th, td { border-bottom: 1px solid rgba(255,255,255,0.12); padding: 10px 6px; vertical-align: top; }
+    th { color: var(--muted); font-size: 12px; font-weight: 700; text-align: left; }
+    td:last-child, th:last-child { text-align: right; }
+    .small { color: var(--muted); font-size: 12px; line-height: 1.5; }
+
+    .status-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 12px; }
+    .pill { padding: 6px 10px; border-radius: 10px; border: 1px solid var(--line); color: var(--muted); background: rgba(255,255,255,.04); font-size: 12px; }
+    .pill.warn { color: #ffe29f; border-color: rgba(255,226,159,.6); }
+
+    @media (max-width: 640px) {
+      h1 { font-size: 18px; }
+      button { width: 100%; justify-content: center; text-align: center; }
+      .actions { width: 100%; }
+    }
+  </style>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0c1024">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="title-row">
+      <div>
+        <h1>Calculateur d'honoraires – V5</h1>
+        <div class="subtitle">Mission complète = Études + Suivi de chantier CPL. Le % équivalent suit strictement ton objectif.</div>
+      </div>
+      <div class="actions">
+        <span class="badge" id="statusBadge">Prêt</span>
+        <button class="primary" id="btnCompute">Calculer</button>
+        <button class="good" id="btnPrint">Exporter / Imprimer</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="grid">
+    <section class="card">
+      <h2>Entrées</h2>
+      <div class="hint">Saisis les informations du dossier, ajuste les coefficients et déclenche le calcul. Les valeurs sont sauvegardables (local & JSON).</div>
+
+      <div class="section">
+        <h2>Client & dossier</h2>
+        <div class="row">
+          <div>
+            <label>Date</label>
+            <input type="date" id="dateDoc" />
+          </div>
+          <div>
+            <label>Référence dossier</label>
+            <input type="text" id="refDossier" placeholder="ex : DE-260001" />
+          </div>
+        </div>
+        <div class="row">
+          <div>
+            <label>Nom</label>
+            <input type="text" id="clientNom" placeholder="Nom" />
+          </div>
+          <div>
+            <label>Prénom</label>
+            <input type="text" id="clientPrenom" placeholder="Prénom" />
+          </div>
+        </div>
+        <div class="row">
+          <div>
+            <label>Email</label>
+            <input type="email" id="clientEmail" placeholder="email@domaine.fr" />
+          </div>
+          <div>
+            <label>Téléphone</label>
+            <input type="text" id="clientTel" placeholder="06…" />
+          </div>
+        </div>
+        <label>Adresse</label>
+        <input type="text" id="clientAdresse" placeholder="N°, rue…" />
+        <div class="row">
+          <div>
+            <label>Ville</label>
+            <input type="text" id="clientVille" placeholder="Ville" />
+          </div>
+          <div>
+            <label>Département</label>
+            <input type="text" id="clientDept" placeholder="ex : 75 / 93 / 94…" />
+          </div>
+        </div>
+        <label>Notes (option)</label>
+        <textarea id="notes" placeholder="Contexte, contraintes, copro/ABF, etc."></textarea>
+      </div>
+
+      <div class="section">
+        <h2>Projet</h2>
+        <div class="row">
+          <div>
+            <label>Surface à étudier (m²)</label>
+            <input type="number" id="surfaceM2" min="0" step="1" placeholder="ex : 85" />
+          </div>
+          <div>
+            <label>Estimation travaux (HT €)</label>
+            <input type="number" id="travauxHT" min="0" step="100" placeholder="ex : 96000" />
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>Complexité</h2>
+        <div class="hint">Active les options pertinentes. Un coefficient forcé peut remplacer le calcul automatique.</div>
+        <div class="checkboxes" id="complexityChecks">
+          <label class="check"><input type="checkbox" data-mult="1.05" id="cx1" /><div class="meta"><b>Contrainte technique</b><br />+5% (réseaux, structure, lots techniques)</div></label>
+          <label class="check"><input type="checkbox" data-mult="1.07" id="cx2" /><div class="meta"><b>Contrainte copropriété</b><br />+7% (AG, règles, coordination)</div></label>
+          <label class="check"><input type="checkbox" data-mult="1.10" id="cx3" /><div class="meta"><b>Insertion / rendu renforcé</b><br />+10% (insertion, variantes, présentation)</div></label>
+          <label class="check"><input type="checkbox" data-mult="1.12" id="cx4" /><div class="meta"><b>ABF / zone sensible</b><br />+12% (aller-retours, exigences)</div></label>
+        </div>
+        <div class="row">
+          <div>
+            <label>Coefficient total forcé (option)</label>
+            <input type="number" id="coeffForce" step="0.01" min="0" placeholder="ex : 1.15 (laisser vide = auto)" />
+            <div class="small">Remplace l'addition automatique des options si renseigné.</div>
+          </div>
+          <div>
+            <label>Coefficient automatique calculé</label>
+            <input type="text" id="coeffAuto" class="mono" readonly />
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>Options</h2>
+        <div class="row">
+          <label class="check" style="margin-top:4px;"><input type="checkbox" id="scanOn" /><div class="meta"><b>Scan activé</b><br />Ajoute un forfait de numérisation.</div></label>
+          <div>
+            <label>Prix scan (HT €)</label>
+            <input type="number" id="scanPrix" min="0" step="10" placeholder="ex : 350" />
+          </div>
+        </div>
+        <div class="row">
+          <div>
+            <label>Pièces administratives</label>
+            <select id="adminType">
+              <option value="none">Aucune</option>
+              <option value="dp">Déclaration Préalable (DP)</option>
+              <option value="pc">Permis de Construire (PC)</option>
+            </select>
+            <div class="small">Le montant est libre et modifiable.</div>
+          </div>
+          <div>
+            <label>Montant admin (HT €)</label>
+            <input type="number" id="adminPrix" min="0" step="50" placeholder="ex : 1500" />
+          </div>
+        </div>
+        <div class="pill warn" id="archiWarn" style="display:none; margin-top:8px;">⚠️ Au-delà de 150 m² après travaux, un architecte inscrit peut être requis pour un PC.</div>
+      </div>
+
+      <div class="section">
+        <h2>Mission complète & TVA</h2>
+        <div class="row">
+          <div>
+            <label>% mission complète souhaité (sur travaux HT)</label>
+            <input type="number" id="pctGlobal" min="0" step="0.1" placeholder="ex : 12.0" />
+            <div class="small">Permet de comparer le total calculé à un objectif.</div>
+          </div>
+          <div>
+            <label>TVA (%)</label>
+            <input type="number" id="tva" min="0" step="0.1" value="20" />
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>Sauvegarde / import</h2>
+        <div class="actions">
+          <button class="good" id="btnSaveLocal">Sauver (LocalStorage)</button>
+          <button id="btnLoadLocal">Charger (LocalStorage)</button>
+          <button class="primary" id="btnSaveFile">Enregistrer JSON</button>
+          <button id="btnLoadFile">Importer JSON</button>
+          <button class="danger" id="btnClear">Réinitialiser</button>
+        </div>
+        <div class="small" style="margin-top:8px;">Astuce : une sauvegarde JSON par dossier (ex : <span style="font-family: ui-monospace;">DE-260001.json</span>).</div>
+        <input type="file" id="fileInput" accept="application/json" style="display:none" />
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Résultats</h2>
+      <div class="hint">Mission complète = Études + Suivi de chantier CPL. Le total et le % équivalent ne dépassent pas ton % mission complète souhaité.</div>
+
+      <div class="summary-bar">
+        <div class="summary-chip">
+          <div class="label">Total HT (mission complète)</div>
+          <div class="value" id="kpiTotalHT">—</div>
+          <div class="sub" id="summaryBreakdown">—</div>
+        </div>
+        <div class="summary-chip">
+          <div class="label">% équivalent sur travaux</div>
+          <div class="value" id="eqPctMain">—</div>
+          <div class="sub" id="eqPctMainNote">—</div>
+        </div>
+        <div class="summary-chip">
+          <div class="label">Objectif mission complète</div>
+          <div class="value" id="goalMain">—</div>
+          <div class="sub" id="goalMainNote">—</div>
+        </div>
+      </div>
+
+      <div class="kpi-grid">
+        <div class="kpi accent"><div class="t">Études (HT)</div><div class="v" id="kpiEtudes">—</div><div class="note" id="kpiEtudesNote">—</div></div>
+        <div class="kpi purple"><div class="t">Suivi de chantier CPL (HT)</div><div class="v" id="kpiChantierCpl">—</div><div class="note" id="kpiChantierCplNote">—</div></div>
+        <div class="kpi"><div class="t">% études / % suivi</div><div class="v" id="kpiPctSplit">—</div><div class="note" id="kpiPctSplitNote">—</div></div>
+        <div class="kpi accent"><div class="t">Total (TTC)</div><div class="v" id="kpiTotalTTC">—</div><div class="note" id="kpiTVANote">—</div></div>
+        <div class="kpi" id="kpiWarningBlock" style="display:none;"><div class="t">Alerte</div><div class="v" id="kpiWarning">—</div><div class="note" id="kpiWarningNote">—</div></div>
+      </div>
+
+      <div class="section">
+        <h2>Détail</h2>
+        <table>
+          <thead><tr><th>Poste</th><th>Base</th><th>Coeff / %</th><th>Montant (HT)</th></tr></thead>
+          <tbody id="detailBody"></tbody>
+          <tfoot><tr><td colspan="3"><b>Total (HT)</b></td><td><b id="detailTotalHT">—</b></td></tr></tfoot>
+        </table>
+      </div>
+
+      <div class="section">
+        <h2>Paramètres grilles</h2>
+        <div class="small">
+          <b>Études :</b> &lt;30m² = 2400€ ; 31–60 = 78€/m² ; 61–120 = 70€/m² ; 121–240 = 68€/m² ; &gt;240 = 60€/m² (planchers anti-seuil).<br />
+          <b>Suivi chantier (référence interne) :</b> &lt;20k = 2100€ ; 20–60k = 11% ; 60–120k = 10% ; &gt;120k = 9,5% (planchers anti-seuil, utilisé pour information).
+        </div>
+      </div>
+
+      <div class="status-row">
+        <span class="pill" id="dirtyNotice" style="display:none;">Modifications en attente de calcul</span>
+        <span class="pill" id="liveNotice">Calcul en direct activé</span>
+      </div>
+    </section>
+  </div>
+</main>
+
+<script>
+  const formatterEuro = new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" });
+  const formatterPct = new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 2 });
+  const euro = (n) => (Number.isFinite(n) ? formatterEuro.format(n) : "—");
+  const pctFmt = (n) => (Number.isFinite(n) ? `${formatterPct.format(n)} %` : "—");
+  const num = (id) => {
+    const val = document.getElementById(id).value;
+    if (val === "" || val === null || val === undefined) return NaN;
+    return Number(val);
+  };
+  const str = (id) => document.getElementById(id).value ?? "";
+  const round2 = (n) => Math.round((n + Number.EPSILON) * 100) / 100;
+
+  function calcEtudesBase(m2) {
+    if (!Number.isFinite(m2) || m2 <= 0) return { base: 0, rule: "Aucune surface" };
+    const forfait = 2400;
+    const r1 = 78, r2 = 70, r3 = 68, r4 = 60;
+    const floor_31_60 = forfait;
+    const floor_61_120 = 60 * r1;
+    const floor_121_240 = 120 * r2;
+    const floor_241p = 240 * r3;
+    let fee = 0; let rule = "";
+    if (m2 < 30) { fee = forfait; rule = "< 30 m² : forfait 2 400 €"; }
+    else if (m2 <= 60) { fee = Math.max(m2 * r1, floor_31_60); rule = "31–60 m² : 78 €/m² (min 2 400 €)"; }
+    else if (m2 <= 120) { fee = Math.max(m2 * r2, floor_61_120); rule = "61–120 m² : 70 €/m² (min 4 680 €)"; }
+    else if (m2 <= 240) { fee = Math.max(m2 * r3, floor_121_240); rule = "121–240 m² : 68 €/m² (min 8 400 €)"; }
+    else { fee = Math.max(m2 * r4, floor_241p); rule = "> 240 m² : 60 €/m² (min 16 320 €)"; }
+    return { base: round2(fee), rule };
+  }
+
+  function calcChantierBase(travauxHT) {
+    if (!Number.isFinite(travauxHT) || travauxHT <= 0) return { base: 0, rule: "Aucun budget travaux" };
+    const forfait = 2100;
+    const p1 = 0.11, p2 = 0.10, p3 = 0.095;
+    const floor_20_60 = forfait;
+    const floor_60_120 = 60000 * p1;
+    const floor_120p = 120000 * p2;
+    let fee = 0; let rule = "";
+    if (travauxHT < 20000) { fee = forfait; rule = "< 20 000 € : forfait 2 100 €"; }
+    else if (travauxHT <= 60000) { fee = Math.max(travauxHT * p1, floor_20_60); rule = "20–60k : 11% (min 2 100 €)"; }
+    else if (travauxHT <= 120000) { fee = Math.max(travauxHT * p2, floor_60_120); rule = "60–120k : 10% (min 6 600 €)"; }
+    else { fee = Math.max(travauxHT * p3, floor_120p); rule = "> 120k : 9,5% (min 12 000 €)"; }
+    return { base: round2(fee), rule };
+  }
+
+  function calcCoeff() {
+    const forced = num("coeffForce");
+    if (Number.isFinite(forced) && forced > 0) return { coeff: forced, mode: "forcé" };
+    const checks = Array.from(document.querySelectorAll("#complexityChecks input[type='checkbox']"));
+    let c = 1;
+    checks.forEach(ch => { if (ch.checked) c *= Number(ch.dataset.mult || 1); });
+    return { coeff: round2(c), mode: "auto" };
+  }
+
+  function getAdminDefaults(type) {
+    if (type === "dp") return 1500;
+    if (type === "pc") return 3500;
+    return 0;
+  }
+
+  function escapeHTML(str) {
+    return String(str)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+  const LS_KEY = "honoraire_v5_state";
+  let liveComputeTimer = null;
+  let dirty = false;
+
+  function setStatus(text, kind = "") {
+    const badge = document.getElementById("statusBadge");
+    badge.textContent = text;
+    badge.className = `badge ${kind}`;
+  }
+
+  function markDirty() {
+    dirty = true;
+    document.getElementById("dirtyNotice").style.display = "inline-flex";
+    scheduleCompute();
+  }
+
+  function scheduleCompute() {
+    clearTimeout(liveComputeTimer);
+    liveComputeTimer = setTimeout(() => {
+      computeAndRender();
+      dirty = false;
+      document.getElementById("dirtyNotice").style.display = "none";
+    }, 120);
+  }
+
+  function collectState() {
+    const checks = Array.from(document.querySelectorAll("#complexityChecks input[type='checkbox']"))
+      .map(ch => ({ id: ch.id, checked: ch.checked }));
+    return {
+      meta: { version: "5.0", savedAt: new Date().toISOString() },
+      inputs: {
+        dateDoc: str("dateDoc"), refDossier: str("refDossier"), clientNom: str("clientNom"), clientPrenom: str("clientPrenom"),
+        clientEmail: str("clientEmail"), clientTel: str("clientTel"), clientAdresse: str("clientAdresse"), clientVille: str("clientVille"),
+        clientDept: str("clientDept"), notes: str("notes"), surfaceM2: str("surfaceM2"), travauxHT: str("travauxHT"),
+        coeffForce: str("coeffForce"), complexityChecks: checks, scanOn: document.getElementById("scanOn").checked, scanPrix: str("scanPrix"),
+        adminType: str("adminType"), adminPrix: str("adminPrix"), pctGlobal: str("pctGlobal"), tva: str("tva")
+      }
+    };
+  }
+
+  function applyState(state) {
+    const i = state?.inputs || {};
+    const set = (id, val) => { const el = document.getElementById(id); if (el) el.value = val ?? ""; };
+    set("dateDoc", i.dateDoc); set("refDossier", i.refDossier); set("clientNom", i.clientNom); set("clientPrenom", i.clientPrenom);
+    set("clientEmail", i.clientEmail); set("clientTel", i.clientTel); set("clientAdresse", i.clientAdresse); set("clientVille", i.clientVille);
+    set("clientDept", i.clientDept); set("notes", i.notes); set("surfaceM2", i.surfaceM2); set("travauxHT", i.travauxHT);
+    set("coeffForce", i.coeffForce); set("scanPrix", i.scanPrix); set("adminType", i.adminType ?? "none"); set("adminPrix", i.adminPrix);
+    set("pctGlobal", i.pctGlobal); set("tva", i.tva ?? "20");
+    (i.complexityChecks || []).forEach(c => { const el = document.getElementById(c.id); if (el) el.checked = !!c.checked; });
+    document.getElementById("scanOn").checked = !!i.scanOn;
+    computeAndRender();
+    setStatus("Chargé", "ok");
+  }
+
+  function computeAndRender() {
+    const m2 = num("surfaceM2");
+    const travaux = num("travauxHT");
+    const tvaPct = Number.isFinite(num("tva")) ? num("tva") : 20;
+    const { coeff, mode } = calcCoeff();
+    document.getElementById("coeffAuto").value = `${coeff} (${mode})`;
+
+    const adminType = str("adminType");
+    const adminPrixEl = document.getElementById("adminPrix");
+    if ((adminPrixEl.value === "" || adminPrixEl.value === null) && adminType !== "none") {
+      adminPrixEl.value = String(getAdminDefaults(adminType));
+    }
+    const adminPrix = num("adminPrix");
+    const warn = document.getElementById("archiWarn");
+    warn.style.display = (Number.isFinite(m2) && m2 >= 150 && adminType === "pc") ? "inline-flex" : "none";
+
+    const et = calcEtudesBase(m2);
+    const ch = calcChantierBase(travaux);
+
+    const scanOn = document.getElementById("scanOn").checked;
+    const scanPrix = scanOn ? (Number.isFinite(num("scanPrix")) ? num("scanPrix") : 0) : 0;
+    const adminOn = adminType !== "none";
+    const adminFee = adminOn ? (Number.isFinite(adminPrix) ? adminPrix : 0) : 0;
+
+    const etudesBase = et.base;
+    const etudesCoeff = round2(etudesBase * coeff);
+    const etudesTotal = round2(etudesCoeff + scanPrix + adminFee);
+    const goalPct = num("pctGlobal");
+    const hasGoal = Number.isFinite(goalPct) && Number.isFinite(travaux) && travaux > 0;
+    const goalTotal = hasGoal ? round2((goalPct / 100) * travaux) : NaN;
+
+    const chantierCpl = hasGoal ? round2(Math.max(goalTotal - etudesTotal, 0)) : ch.base;
+    const missionTotalHT = round2(etudesTotal + chantierCpl);
+    const totalTTC = round2(missionTotalHT * (1 + tvaPct / 100));
+
+    const pctEtudesSurTravaux = Number.isFinite(travaux) && travaux > 0 ? round2((etudesTotal / travaux) * 100) : NaN;
+    const pctSuiviSurTravaux = Number.isFinite(travaux) && travaux > 0 ? round2((chantierCpl / travaux) * 100) : NaN;
+    const eq = Number.isFinite(travaux) && travaux > 0 ? round2((missionTotalHT / travaux) * 100) : NaN;
+    const delta = hasGoal ? round2(missionTotalHT - goalTotal) : NaN;
+    const pctMissionTarget = hasGoal ? goalPct : eq;
+
+    document.getElementById("kpiEtudes").textContent = euro(etudesTotal);
+    document.getElementById("kpiEtudesNote").textContent = `${et.rule} • coeff ${coeff} • options incluses${Number.isFinite(pctEtudesSurTravaux) ? ` • ${pctFmt(pctEtudesSurTravaux)} sur travaux${Number.isFinite(goalPct) ? ` / objectif ${pctFmt(goalPct)}` : ""}` : ""}`;
+    document.getElementById("kpiChantierCpl").textContent = euro(chantierCpl);
+    document.getElementById("kpiChantierCplNote").textContent = hasGoal
+      ? `Cible CPL = objectif ${pctFmt(goalPct)} - Études`
+      : `${ch.rule} (référence interne)`;
+    document.getElementById("kpiTotalHT").textContent = euro(missionTotalHT);
+    document.getElementById("kpiTotalTTC").textContent = euro(totalTTC);
+    document.getElementById("kpiTVANote").textContent = `TVA ${tvaPct}%`;
+    document.getElementById("kpiPctSplit").textContent = Number.isFinite(pctEtudesSurTravaux) && Number.isFinite(pctSuiviSurTravaux)
+      ? `${pctFmt(pctEtudesSurTravaux)} / ${pctFmt(pctSuiviSurTravaux)}`
+      : "—";
+    document.getElementById("kpiPctSplitNote").textContent = "Études / Suivi rapportés au budget travaux";
+
+    const body = document.getElementById("detailBody");
+    body.innerHTML = "";
+    const rows = [];
+    rows.push({ poste: "Études – base (selon m²)", base: et.rule, coeff: "—", montant: etudesBase });
+    rows.push({ poste: "Études – après coefficient", base: euro(etudesBase), coeff: `× ${coeff}`, montant: etudesCoeff });
+    if (scanOn) rows.push({ poste: "Scan / relevé", base: "Forfait", coeff: "—", montant: scanPrix });
+    if (adminOn) rows.push({ poste: `Pièces administratives (${adminType.toUpperCase()})`, base: "Forfait", coeff: "—", montant: adminFee });
+    rows.push({ poste: "Sous-total Études", base: "—", coeff: "—", montant: etudesTotal });
+    rows.push({ poste: "Suivi de chantier CPL", base: hasGoal ? `Cible = ${pctFmt(goalPct)} - Études` : ch.rule, coeff: "—", montant: chantierCpl });
+
+    rows.forEach(r => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${escapeHTML(r.poste)}</td>
+        <td class="small">${escapeHTML(String(r.base))}</td>
+        <td class="small">${escapeHTML(String(r.coeff))}</td>
+        <td><b>${euro(r.montant)}</b></td>
+      `;
+      body.appendChild(tr);
+    });
+    document.getElementById("detailTotalHT").textContent = euro(missionTotalHT);
+
+    const eqText = Number.isFinite(eq) ? pctFmt(eq) : "—";
+    document.getElementById("eqPctMain").textContent = eqText;
+    document.getElementById("eqPctMainNote").textContent = Number.isFinite(eq) ? `Sur base travaux ${euro(travaux)}` : "Renseigne un budget travaux et un % mission complète.";
+
+    if (hasGoal) {
+      const sign = delta > 0 ? "+" : "";
+      document.getElementById("goalMain").textContent = `${pctFmt(goalPct)} → ${euro(goalTotal)}`;
+      document.getElementById("goalMainNote").textContent = `Écart (calcul - objectif) : ${sign}${euro(delta)}`;
+    } else {
+      document.getElementById("goalMain").textContent = "—";
+      document.getElementById("goalMainNote").textContent = "Renseigne un % mission complète pour fixer la CPL.";
+    }
+    document.getElementById("summaryBreakdown").textContent = `${euro(etudesTotal)} Études + ${euro(chantierCpl)} Suivi`;
+
+    const warnBlock = document.getElementById("kpiWarningBlock");
+    if (hasGoal && etudesTotal > goalTotal) {
+      warnBlock.style.display = "block";
+      document.getElementById("kpiWarning").textContent = "Études > % mission complète";
+      document.getElementById("kpiWarningNote").textContent = "La CPL est ramenée à 0 € pour ne pas dépasser, ajuste le coefficient ou le % cible.";
+    } else if (hasGoal && Math.abs(delta) > 0) {
+      warnBlock.style.display = "block";
+      document.getElementById("kpiWarning").textContent = delta === 0 ? "Aligné" : (delta > 0 ? "Au-dessus de la cible" : "En-dessous de la cible");
+      document.getElementById("kpiWarningNote").textContent = `Ajuste Études/CPL pour tendre vers ${pctFmt(goalPct)} sur travaux.`;
+    } else {
+      warnBlock.style.display = "none";
+    }
+
+    if (!Number.isFinite(m2) || m2 <= 0) setStatus("Surface manquante", "warn");
+    else if (!Number.isFinite(travaux) || travaux <= 0) setStatus("Budget travaux manquant", "warn");
+    else setStatus("Calcul OK", "ok");
+
+    window.__computed = { m2, travaux, tvaPct, coeff, et, chRef: ch, scanOn, scanPrix, adminOn, adminType, adminFee, etudesBase, etudesCoeff, etudesTotal, chantierCpl, missionTotalHT, totalTTC, eq, goalPct, goalTotal, delta, pctEtudesSurTravaux, pctSuiviSurTravaux, pctMissionTarget };
+  }
+
+  document.getElementById("btnSaveLocal").addEventListener("click", () => {
+    localStorage.setItem(LS_KEY, JSON.stringify(collectState()));
+    setStatus("Sauvé (LocalStorage)", "ok");
+  });
+
+  document.getElementById("btnLoadLocal").addEventListener("click", () => {
+    const raw = localStorage.getItem(LS_KEY);
+    if (!raw) return setStatus("Aucune sauvegarde locale", "warn");
+    try { applyState(JSON.parse(raw)); } catch (e) { console.error(e); setStatus("Erreur chargement local", "danger"); }
+  });
+
+  document.getElementById("btnClear").addEventListener("click", () => {
+    if (!confirm("Réinitialiser toutes les données ?")) return;
+    document.querySelectorAll("input, textarea, select").forEach(el => {
+      if (el.type === "checkbox") el.checked = false;
+      else if (el.id === "tva") el.value = "20";
+      else if (el.id === "adminType") el.value = "none";
+      else el.value = "";
+    });
+    document.getElementById("dateDoc").value = new Date().toISOString().slice(0,10);
+    computeAndRender();
+    setStatus("Réinitialisé", "warn");
+  });
+
+  async function saveAsFile(jsonText, suggestedName = "dossier.json") {
+    if (window.showSaveFilePicker) {
+      const handle = await window.showSaveFilePicker({ suggestedName, types: [{ description: "JSON", accept: { "application/json": [".json"] } }] });
+      const writable = await handle.createWritable();
+      await writable.write(new Blob([jsonText], { type: "application/json" }));
+      await writable.close();
+      return;
+    }
+    const blob = new Blob([jsonText], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = suggestedName;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  }
+
+  document.getElementById("btnSaveFile").addEventListener("click", async () => {
+    try {
+      const state = collectState();
+      const nameBase = (str("refDossier") || "dossier").replaceAll(" ", "_");
+      await saveAsFile(JSON.stringify(state, null, 2), `${nameBase}.json`);
+      setStatus("JSON enregistré", "ok");
+    } catch (e) {
+      console.error(e);
+      setStatus("Enregistrement annulé/échoué", "warn");
+    }
+  });
+
+  document.getElementById("btnLoadFile").addEventListener("click", () => document.getElementById("fileInput").click());
+  document.getElementById("fileInput").addEventListener("change", async (ev) => {
+    const file = ev.target.files?.[0];
+    if (!file) return;
+    try {
+      const text = await file.text();
+      applyState(JSON.parse(text));
+      setStatus("JSON importé", "ok");
+    } catch (e) {
+      console.error(e);
+      setStatus("Erreur import JSON", "danger");
+    } finally { ev.target.value = ""; }
+  });
+
+  function openPrintable() {
+    computeAndRender();
+    const st = collectState();
+    const c = window.__computed || {};
+    const client = st.inputs || {};
+    const title = `Devis – ${client.refDossier || "Sans réf"} – ${client.clientNom || ""} ${client.clientPrenom || ""}`.trim();
+    const html = `
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>${escapeHTML(title)}</title>
+<style>
+  body{font-family: Arial, sans-serif; margin:24px; color:#111;}
+  h1{font-size:18px; margin:0 0 8px;}
+  .muted{color:#555; font-size:12px;}
+  .box{border:1px solid #ddd; padding:12px; border-radius:10px; margin-top:12px;}
+  table{width:100%; border-collapse:collapse; margin-top:10px;}
+  th,td{border-bottom:1px solid #eee; padding:8px; font-size:13px; vertical-align:top;}
+  th{text-align:left; color:#555; font-weight:600; font-size:12px;}
+  td:last-child, th:last-child{text-align:right;}
+  .kpi{display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:10px; margin-top:10px;}
+  .kpi .k{border:1px solid #eee; border-radius:10px; padding:10px;}
+  .kpi .t{color:#555; font-size:12px;}
+  .kpi .v{font-size:16px; font-weight:800; margin-top:6px;}
+  .btn{margin-top:16px; display:flex; gap:10px; flex-wrap:wrap;}
+  button{padding:10px 12px; border-radius:10px; border:1px solid #ddd; background:#f7f7f7; cursor:pointer; font-weight:700;}
+  @media print {.btn{display:none;} body{margin:0;}}
+</style>
+</head>
+<body>
+  <h1>${escapeHTML(title)}</h1>
+  <div class="muted">Date : ${escapeHTML(client.dateDoc || "")}</div>
+  <div class="box">
+    <div class="muted"><b>Client</b></div>
+    <div>${escapeHTML((client.clientPrenom||"") + " " + (client.clientNom||""))}</div>
+    <div class="muted">${escapeHTML(client.clientAdresse || "")} ${escapeHTML(client.clientVille || "")} (${escapeHTML(client.clientDept || "")})</div>
+    <div class="muted">${escapeHTML(client.clientEmail || "")} • ${escapeHTML(client.clientTel || "")}</div>
+  </div>
+  <div class="box">
+    <div class="muted"><b>Paramètres projet</b></div>
+    <div class="muted">Surface : <b>${escapeHTML(String(c.m2 ?? ""))} m²</b> • Travaux (HT) : <b>${escapeHTML(euro(c.travaux))}</b></div>
+    <div class="muted">Coefficient complexité : <b>${escapeHTML(String(c.coeff ?? ""))}</b></div>
+    <div class="muted">Admin : <b>${escapeHTML(client.adminType || "none")}</b> • Scan : <b>${client.scanOn ? "oui" : "non"}</b></div>
+    ${client.notes ? `<div class="muted" style="margin-top:8px"><b>Notes :</b> ${escapeHTML(client.notes)}</div>` : ``}
+  </div>
+  <div class="box">
+    <div class="muted"><b>Détail honoraires (HT)</b></div>
+    <table>
+      <thead><tr><th>Poste</th><th>Montant</th></tr></thead>
+      <tbody>
+        <tr><td>Études (base + coeff + options)</td><td><b>${escapeHTML(euro(c.etudesTotal))}</b></td></tr>
+        <tr><td>Suivi de chantier CPL</td><td><b>${escapeHTML(euro(c.chantierCpl))}</b></td></tr>
+        <tr><td><b>Total HT (mission complète)</b></td><td><b>${escapeHTML(euro(c.missionTotalHT))}</b></td></tr>
+        <tr><td>Total TTC (TVA ${escapeHTML(String(c.tvaPct ?? ""))}%)</td><td><b>${escapeHTML(euro(c.totalTTC))}</b></td></tr>
+      </tbody>
+    </table>
+    <div class="kpi">
+      <div class="k"><div class="t">% équivalent sur travaux</div><div class="v">${Number.isFinite(c.eq) ? escapeHTML(pctFmt(c.eq)) : "—"}</div></div>
+      <div class="k"><div class="t">Règle Études</div><div class="v" style="font-size:12px; font-weight:700; margin-top:6px">${escapeHTML(c.et?.rule || "")}</div></div>
+      <div class="k"><div class="t">Référence CPL</div><div class="v" style="font-size:12px; font-weight:700; margin-top:6px">${escapeHTML(c.chRef?.rule || "—")}</div></div>
+      <div class="k"><div class="t">Référence</div><div class="v">${escapeHTML(client.refDossier || "—")}</div></div>
+      <div class="k"><div class="t">Mission complète cible</div><div class="v">${escapeHTML(Number.isFinite(c.goalTotal) ? euro(c.goalTotal) : euro(c.missionTotalHT))}</div></div>
+      <div class="k"><div class="t">Études (% travaux)</div><div class="v">${Number.isFinite(c.pctEtudesSurTravaux) ? escapeHTML(pctFmt(c.pctEtudesSurTravaux)) : "—"}</div></div>
+      <div class="k"><div class="t">Cible (% travaux)</div><div class="v">${Number.isFinite(c.pctMissionTarget) ? escapeHTML(pctFmt(c.pctMissionTarget)) : "—"}</div></div>
+    </div>
+  </div>
+  <div class="btn">
+    <button onclick="window.print()">Imprimer / Export PDF</button>
+    <button onclick="window.close()">Fermer</button>
+  </div>
+<script>
+  // PWA: enregistrement du Service Worker (nécessite HTTPS ou localhost)
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("./service-worker.js").catch(console.error);
+    });
+  }
+</script>
+
+</body>
+</html>`;
+    const w = window.open("", "_blank");
+    w.document.open();
+    w.document.write(html);
+    w.document.close();
+  }
+  document.getElementById("btnPrint").addEventListener("click", openPrintable);
+  document.getElementById("btnCompute").addEventListener("click", () => { computeAndRender(); dirty = false; document.getElementById("dirtyNotice").style.display = "none"; setStatus("Calcul forcé", "ok"); });
+
+  function bindLiveEvents() {
+    const ids = ["dateDoc","refDossier","clientNom","clientPrenom","clientEmail","clientTel","clientAdresse","clientVille","clientDept","notes","surfaceM2","travauxHT","coeffForce","scanOn","scanPrix","adminType","adminPrix","pctGlobal","tva"];
+    ids.forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.addEventListener("input", markDirty);
+      el.addEventListener("change", markDirty);
+    });
+    document.querySelectorAll("#complexityChecks input[type='checkbox']").forEach(ch => ch.addEventListener("change", markDirty));
+    document.getElementById("adminType").addEventListener("change", () => {
+      const t = str("adminType");
+      if (t === "none") document.getElementById("adminPrix").value = "";
+      else if (document.getElementById("adminPrix").value === "") document.getElementById("adminPrix").value = String(getAdminDefaults(t));
+    });
+    document.getElementById("scanOn").addEventListener("change", () => {
+      if (document.getElementById("scanOn").checked && document.getElementById("scanPrix").value === "") document.getElementById("scanPrix").value = "350";
+    });
+  }
+
+  (function init(){
+    document.getElementById("dateDoc").value = new Date().toISOString().slice(0,10);
+    bindLiveEvents();
+    computeAndRender();
+    setStatus("Prêt", "");
+  })();
+</script>
+</body>
+</html>
